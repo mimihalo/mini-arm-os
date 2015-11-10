@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include "reg.h"
 #include "threads.h"
 
@@ -29,6 +30,25 @@ int fib(int num)
 	asm volatile("mov %0, r5" : "=r" (res) ::);
 	asm volatile("pop {r3, r4, r5, r6}");
 	return res;
+}
+
+void itoa(int n, char *dst, int base)
+{
+	char buf[33] = {0};
+	char *p = &buf[32];
+	
+	if (n == 0)
+		*--p = '0';
+	else {
+		unsigned int num = (base == 10 && num < 0) ? -n : n;
+
+		for (; num; num/=base)
+			*--p = "0123456789ABCDEF" [num % base];
+		if (base == 10 && n < 0)
+			*--p = '-';
+	}
+
+	strcpy(dst, p);
 }
 
 void usart_init(void)
@@ -75,7 +95,18 @@ static void busy_loop(void *str)
 
 void test1(void *userdata)
 {
-	busy_loop(userdata);
+	int f;
+	char str[33];
+	while (1) {
+		print_str(userdata);
+		print_str(": Running...\n");
+		f=fib(10);
+		itoa(f, str, 10);
+		print_str("fib(10)=");
+		print_str(str);
+		print_str("\n");
+		delay(1000);
+	}
 }
 
 void test2(void *userdata)
