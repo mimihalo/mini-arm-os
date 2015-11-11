@@ -129,9 +129,9 @@ void cmd_fib(void *num)
 void cmd(char str[])
 {
 	char *sstr = strtok(str, " ");
-	if (strcmp("help", sstr) == 0) {
+	if (strncmp("help", sstr, 64) == 0) {
 		cmd_help();
-	} else if (strcmp("fib", sstr) == 0) {
+	} else if (strncmp("fib", sstr, 64) == 0) {
 		//sstr = strtok(NULL, " ");
 		if (thread_create(cmd_fib, (void *) 10) == -1)
 			print_str("fib thread creation failed\r\n");

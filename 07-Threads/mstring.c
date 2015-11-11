@@ -46,15 +46,15 @@ char *strchr(const char *s, int c)
 {
 	for (; *s != (char)c; ++s)
 		if (*s == '\0')
-			return NULL;
+			return 0;
 	return (char *)s;
 }
 
-size_t strcspn(const char *s, const char *reject)
+unsigned int strcspn(const char *s, const char *reject)
 {
 	const char *p;
 	const char *r;
-	size_t count = 0;
+	unsigned int count = 0;
 
 	for (p = s; *p != '\0'; ++p) {
 		for (r = reject; *r != '\0'; ++r) {
@@ -65,3 +65,19 @@ size_t strcspn(const char *s, const char *reject)
 	}
 	return count;
 }
+
+int strncmp(const char *cs, const char *ct, unsigned int count)
+ {
+         unsigned char c1, c2;
+ 
+         while (count) {
+                 c1 = *cs++;
+                 c2 = *ct++;
+                 if (c1 != c2)
+                         return c1 < c2 ? -1 : 1;
+                 if (!c1)
+                         break;
+                 count--;
+         }
+         return 0;
+ }
