@@ -20,7 +20,7 @@ int fib(int num)
 
 	int res;
 	asm volatile("push {r3, r4, r5, r6}");
-	asm volatile("mov r6, %0" :: "r"(num) :);
+	asm volatile("mov r6, %[arg]" :: [arg] "r"(num) :);
 	asm volatile("mov r3,#0\n"
 	             "mov r4,#1\n"
 	             "mov r5,#0\n"
@@ -30,7 +30,7 @@ int fib(int num)
 	             "add r5,r3,r4\n"
 	             "subs r6,r6,#1\n"
 	             "bgt .forloop\n");
-	asm volatile("mov %0, r5" : "=r"(res) ::);
+	asm volatile("mov %[result], r5" : [result] "=r"(res) ::);
 	asm volatile("pop {r3, r4, r5, r6}");
 	return res;
 }
