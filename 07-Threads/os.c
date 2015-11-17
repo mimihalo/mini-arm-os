@@ -13,6 +13,8 @@
 /* when RXNE is set, data can be read */
 #define USART_FLAG_RXNE ((uint16_t) 0x0020)
 
+char mutex=0;
+
 int fib(int num)
 {
 	if (num == 0)
@@ -112,9 +114,12 @@ void print_char(const char *str)
 
 void cmd_help()
 {
+	while(mutex);
+	mutex=1;
 	print_str("supported command:\n");
 	print_str("help\n");
 	print_str("fib\n");
+	mutex=0;
 }
 
 void cmd_fib(void *num)
@@ -124,6 +129,7 @@ void cmd_fib(void *num)
 	print_str("fib(10)=");
 	print_str(res);
 	print_str("\n");
+	mutex=0;
 }
 
 void cmd(char str[])
@@ -134,7 +140,12 @@ void cmd(char str[])
 	} else if (strncmp("fib", sstr, 64) == 0) {
 		//sstr = strtok(NULL, " ");
 		if (thread_create(cmd_fib, (void *) 10) == -1)
+		{
 			print_str("fib thread creation failed\r\n");
+		}else
+		{
+			mutex=1;
+		}
 	}
 }
 
@@ -143,6 +154,7 @@ void shell(void *userdata)
 	char buf[64];
 	int ii = 0, enter = 0;
 	while (1) {
+		while(mutex);
 		print_str(userdata);
 		print_str("@mimi $ ");
 		while (enter == 0) {
